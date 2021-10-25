@@ -2,31 +2,56 @@
 title: "ESM 206 - Lab 5"
 author: "Kirsten White"
 date: "10/25/2021"
-output: html_document
+output: 
+  html_document: 
+    theme: lumen
+    toc: yes
+    code_folding: hide
 ---
+
+### Learn cool customization 
+- Wheel beside knit, output options (at the bottom), edit general, figures, advanced; add a theme (example: cerulean), table of contents (determined by hierarchy indicated by # signs), etc
+- Code folding - gives user the option of seeing your code only if they want to. Do this by: adding code_folding: hide in the yaml 
 
 ```{r setup, include = TRUE, warning = FALSE, message = FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
-# Add *.html in th .gitignore folder to ignore everything in html
+# Add *.html in the .gitignore folder to ignore everything in html
+
+# Attach Packages
+
+library(tidyverse)
+library(effsize) #install "effsize" package in the console 
 ```
 
-## R Markdown
+## Part 1: Confidence Intervals
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+In this section, we'll use the `t.test()` to calculate confidence intervals 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+### Example 1: 
 
-```{r cars}
-summary(cars)
+Create a single mock sample containing a number of value, then learn to use `t.test()    to return confidence intervals, and learn about in-line code referencing so our text becomes more reproducible, too. 
+
+```{r}
+# Create a mock sample with a vector of 8 number values
+
+otter_lengths <- c(30, 45, 28, 31, 34, 46, 52, 29)
+
+# How do we get a confidence interval of these samples? Find confidence interval by using `t.test()`
+
+# Returns statistical outcomes; most importantly a confidence interval (of 95%) - meaning that, if we took multiple samples and calculated a confidence interval for each, we can expect 95% of those intervals to contain the true population mean; this 29 to 44 will likely contain the population mean 
+otter_ci <- t.test(otter_lengths)
+
+
+# Find standard deviation 
+otter_sd <- sd(otter_lengths)
 ```
 
-## Including Plots
+Mean otter length is 36.9 inches +- ($/pm$) 9.32 inches (standard deviation = 9.32, n = 8) with a 95% confidence interval of [29.1 to 44.7] inches. (*** need to include sample size, standard deviation***)
 
-You can also embed plots, for example:
+*** ---- This is not reproducible by manually typing in these values. We want to build in ways to insert outputs of our code in our description. USE in-line referencing to outputs of code & store values as something & pulling the pieces by name. Find the documentation of these functions by searching ?t.test (example) in the console and reading the value section listed in the help area (example: statistic is the value of the t-statistic; conf.int is the value of the confidence interval--- recall it with object_name$value_name;  example: otter_ci$p.value or otter_ci$conf.int or otter_ci$statistic ****
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+#### Now, using in-line referencing
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Mean otter length is (use one backtick + r to input mini code chunk) `r round(otter_ci$estimate, 1)` inches (to show value of the estimated mean and round it to one decimal place) 
+
