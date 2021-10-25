@@ -9,7 +9,7 @@ output:
     code_folding: hide
 ---
 
-### Learn cool customization 
+### **Learn cool customization**
 - Wheel beside knit, output options (at the bottom), edit general, figures, advanced; add a theme (example: cerulean), table of contents (determined by hierarchy indicated by # signs), etc
 - Code folding - gives user the option of seeing your code only if they want to. Do this by: adding code_folding: hide in the yaml 
 
@@ -24,11 +24,11 @@ library(tidyverse)
 library(effsize) #install "effsize" package in the console 
 ```
 
-## Part 1: Confidence Intervals
+## **Part 1: Confidence Intervals**
 
 In this section, we'll use the `t.test()` to calculate confidence intervals 
 
-### Example 1: 
+### **Example 1**
 
 Create a single mock sample containing a number of value, then learn to use `t.test()    to return confidence intervals, and learn about in-line code referencing so our text becomes more reproducible, too. 
 
@@ -53,5 +53,131 @@ Mean otter length is 36.9 inches +- ($/pm$) 9.32 inches (standard deviation = 9.
 
 #### Now, using in-line referencing
 
-Mean otter length is (use one backtick + r to input mini code chunk) `r round(otter_ci$estimate, 1)` inches (to show value of the estimated mean and round it to one decimal place) 
+Tips: use one backtick + r to input mini code chunk. 
 
+Mean otter length is `r round(otter_ci$estimate, 1)` inches 
+
+More tips: to show value of the estimated mean and round it to one decimal place; 
+
+Now: Add the confidence interval to our statement by telling the code to look in the object otter_ci, show the confidence value conf_int, tell it to return only the first value [1], and rounding to one significant figure 
+
+Mean otter length is `r round(otter_ci$estimate, 1)` inches  with a 95% confidence interval of [`r round(otter_ci$conf.int[1])`]
+
+## **Part 2: Two-sample t-tests**
+Do we have sufficient evidence make us reject the null hypothesis that these samples were drawn from populations with the same mean? 
+
+### **Example 2**
+
+```{r}
+# Make my mock samples
+
+oak_trees <- c(20, 19, 24, 28, 34, 12, 15, 25)
+  
+
+pine_trees <- c(39, 26, 20, 30, 37, 22, 19, 18)
+
+# Null hypothesis is that mean heights are the same. Ask: are these sample heights drawn from populations with the same mean height? Or are these mean values so different in either direction to make me reject the null hypothesis? 
+
+# Run a two-sample t-test
+tree_t <- t.test(oak_trees, pine_trees)
+
+# The p-value listed below (0.2871) if these are taken from populations with the same mean (height), there is a 28.7% chance of taking random samples from each pop and finding that the same means are at least as different as what we found (1.1074) (not in feet, needs to be converted) by random chance
+
+# Definitely not so unlikely as to reject the null hypothesis; do not have enough evidence as to reject the null - 
+
+# the mean heights of oak and pine trees were (x +- y) and (x +- y) and the difference was not significant (this is where we would return the outcomes) using t(degrees of freedom)
+
+"t(df) = t-statistic, p = p-value" #standard baseline info we report
+```
+The mean heights of oak trees and pine trees were (x +- y) and (x +- y); and the difference was not significant (t(`r tree_t$parameter`) = `r tree_t$statistic`, p = `r tree_t$p.value`). 
+
+"two-sample t-test; t(df) = t-statistic, p = p-value"
+
+
+*AVOID*: p = 0 
+
+When things get really small (usually p < 0.001)
+
+*Not great:* p = 0.000000000013
+*Better:* p < 0 
+
+could also write in an if, else statement so that if you get a super low value, the code will update accordingly 
+
+
+## Part 3: Another t-test with cars data
+
+Using the `mpg` dataset
+
+### Take a look at the data
+
+```{r}
+# First, filter for compact or suv class
+
+compact_suv <- mpg %>%
+  filter(class %in% c("compact", "suv"))
+
+# Check for remaining levels (make sure they include only the ones specified above)
+
+unique(compact_suv$class)
+
+
+# Create a histogram of city gas mileage faceted by class starting from compact_suv 
+
+ggplot(data = compact_suv, aes(x = cty)) +
+  geom_histogram(color = "black", fill =  "skyblue", bins = 10) +
+  facet_wrap(~ class) + #facet_grid v face_wrap? 
+  theme_grey()
+  
+  
+# QQ plot is 
+
+ggplot(data = compact_suv, aes(sample = cty)) +
+  geom_qq() +
+  facet_wrap(~ class)
+
+# Don't let the tail ends on either side throw you off and think its not linear; look at the major trend
+
+```
+
+### Find summary statistics for each group 
+
+```{r}
+# Use group_by and summarize() to find mean, standard deviation, and sample size 
+
+car_stats <- compact_suv %>%
+  group_by(class) %>%
+  summarize(mean_city = mean(cty), 
+            sd_city = sd(cty),
+            sample_size = n())
+
+car_stats
+```
+
+The t.test() function wants vectors of things. Use `pull()` function to pull a vector out of a data frame (see ?pull)
+
+```{r}
+# Just was compact cars, then pull 
+
+compact_sample <- compact_suv %>%
+  filter(class == "compact") %>%
+
+#check using unique(compact_sample$class)
+
+  pull(cty)
+
+
+# Do this again. Pull a vector of city gas mileage for SUVs 
+
+suv_sample <- compact_suv %>%
+  filter(class == "suv") %>%
+  pull(cty)
+
+# Pulling these, stores values in the environment 
+
+```
+
+Now, use t.test to test null hypothesis (H0: mean city gas mileage 
+```{r}
+t.test(compact_sample, suv_sample)
+```
+It is very very very unlikely that these are drawn from populations with the same mean gas mileage. We REJECT the null hypothesis; there is a significant difference in mean city gas mileage between compact cars and suvs. Put (t(df) = t-statistic, p < 0.001)

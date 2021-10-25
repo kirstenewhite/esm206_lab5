@@ -185,16 +185,20 @@ pre code {
 
 <div id="TOC">
 <ul>
-<li><a href="#learn-cool-customization">Learn cool customization</a></li>
-<li><a href="#part-1-confidence-intervals">Part 1: Confidence Intervals</a>
+<li><a href="#learn-cool-customization"><strong>Learn cool customization</strong></a></li>
+<li><a href="#part-1-confidence-intervals"><strong>Part 1: Confidence Intervals</strong></a>
 <ul>
-<li><a href="#example-1">Example 1:</a></li>
+<li><a href="#example-1"><strong>Example 1</strong></a></li>
+</ul></li>
+<li><a href="#part-2-two-sample-t-tests"><strong>Part 2: Two-sample t-tests</strong></a>
+<ul>
+<li><a href="#example-2"><strong>Example 2</strong></a></li>
 </ul></li>
 </ul>
 </div>
 
 <div id="learn-cool-customization" class="section level3">
-<h3>Learn cool customization</h3>
+<h3><strong>Learn cool customization</strong></h3>
 <ul>
 <li>Wheel beside knit, output options (at the bottom), edit general, figures, advanced; add a theme (example: cerulean), table of contents (determined by hierarchy indicated by # signs), etc</li>
 <li>Code folding - gives user the option of seeing your code only if they want to. Do this by: adding code_folding: hide in the yaml</li>
@@ -209,10 +213,10 @@ library(tidyverse)
 library(effsize) #install &quot;effsize&quot; package in the console </code></pre>
 </div>
 <div id="part-1-confidence-intervals" class="section level2">
-<h2>Part 1: Confidence Intervals</h2>
+<h2><strong>Part 1: Confidence Intervals</strong></h2>
 <p>In this section, we’ll use the <code>t.test()</code> to calculate confidence intervals</p>
 <div id="example-1" class="section level3">
-<h3>Example 1:</h3>
+<h3><strong>Example 1</strong></h3>
 <p>Create a single mock sample containing a number of value, then learn to use `t.test() to return confidence intervals, and learn about in-line code referencing so our text becomes more reproducible, too.</p>
 <pre class="r"><code># Create a mock sample with a vector of 8 number values
 
@@ -230,8 +234,45 @@ otter_sd &lt;- sd(otter_lengths)</code></pre>
 <p>*** —- This is not reproducible by manually typing in these values. We want to build in ways to insert outputs of our code in our description. USE in-line referencing to outputs of code &amp; store values as something &amp; pulling the pieces by name. Find the documentation of these functions by searching ?t.test (example) in the console and reading the value section listed in the help area (example: statistic is the value of the t-statistic; conf.int is the value of the confidence interval— recall it with object_name<span class="math inline">\(value_name; example: otter_ci\)</span>p.value or otter_ci<span class="math inline">\(conf.int or otter_ci\)</span>statistic ****</p>
 <div id="now-using-in-line-referencing" class="section level4">
 <h4>Now, using in-line referencing</h4>
-<p>Mean otter length is (use one backtick + r to input mini code chunk) 36.9 inches (to show value of the estimated mean and round it to one decimal place)</p>
+<p>Tips: use one backtick + r to input mini code chunk.</p>
+<p>Mean otter length is 36.9 inches</p>
+<p>More tips: to show value of the estimated mean and round it to one decimal place;</p>
+<p>Now: Add the confidence interval to our statement by telling the code to look in the object otter_ci, show the confidence value conf_int, tell it to return only the first value [1], and rounding to one significant figure</p>
+<p>Mean otter length is 36.9 inches with a 95% confidence interval of [29]</p>
 </div>
+</div>
+</div>
+<div id="part-2-two-sample-t-tests" class="section level2">
+<h2><strong>Part 2: Two-sample t-tests</strong></h2>
+<p>Do we have sufficient evidence make us reject the null hypothesis that these samples were drawn from populations with the same mean?</p>
+<div id="example-2" class="section level3">
+<h3><strong>Example 2</strong></h3>
+<pre class="r"><code># Make my mock samples
+
+oak_trees &lt;- c(20, 19, 24, 28, 34, 12, 15, 25)
+  
+
+pine_trees &lt;- c(39, 26, 20, 30, 37, 22, 19, 18)
+
+# Null hypothesis is that mean heights are the same. Ask: are these sample heights drawn from populations with the same mean height? Or are these mean values so different in either direction to make me reject the null hypothesis? 
+
+# Run a two-sample t-test
+tree_t &lt;- t.test(oak_trees, pine_trees)
+
+# The p-value listed below (0.2871) if these are taken from populations with the same mean (height), there is a 28.7% chance of taking random samples from each pop and finding that the same means are at least as different as what we found (1.1074) (not in feet, needs to be converted) by random chance
+
+# Definitely not so unlikely as to reject the null hypothesis; do not have enough evidence as to reject the null - 
+
+# the mean heights of oak and pine trees were (x +- y) and (x +- y) and the difference was not significant (this is where we would return the outcomes) using t(degrees of freedom)
+
+&quot;t(df) = t-statistic, p = p-value&quot; #standard baseline info we report</code></pre>
+<pre><code>## [1] &quot;t(df) = t-statistic, p = p-value&quot;</code></pre>
+<p>The mean heights of oak trees and pine trees were (x +- y) and (x +- y); and the difference was not significant (t(13.7329969) = -1.107444, p = 0.2871226).</p>
+<p>“two-sample t-test; t(df) = t-statistic, p = p-value”</p>
+<p><em>AVOID</em>: p = 0</p>
+<p>When things get really small (usually p &lt; 0.001)</p>
+<p><em>Not great:</em> p = 0.000000000013 <em>Better:</em> p &lt; 0</p>
+<p>could also write in an if, else statement so that if you get a super low value, the code will update accordingly</p>
 </div>
 </div>
 
